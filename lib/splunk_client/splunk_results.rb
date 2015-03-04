@@ -20,14 +20,20 @@ class SplunkResults
       return @results
     end
     
-    if nokoResults.results.result.respond_to?("length")
-      # Multiple Results, build array
-      nokoResults.results.result.each do |resultObj|
-        @results.push SplunkResult.new(resultObj)
-      end
+    begin
+      nokoResults.results
+    rescue NoMethodError => e
+      puts nokoResults.children.first.children.to_s
     else
-      # Single results object
-      @results.push SplunkResult.new(nokoResults.results.result)
+      if nokoResults.results.result.respond_to?("length")
+        # Multiple Results, build array
+        nokoResults.results.result.each do |resultObj|
+          @results.push SplunkResult.new(resultObj)
+        end
+      else
+        # Single results object
+        @results.push SplunkResult.new(nokoResults.results.result)
+      end
     end
     
     return @results
